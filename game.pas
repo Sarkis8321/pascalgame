@@ -7,7 +7,7 @@ var sHeight := 600;
 var player := new CircleWPF(10, 10, 10, colors.blue);
 var arrayEnemy:array[1..enemyCount] of CircleWPF;
 
-var text:= new TextWPF(10,100,'очки: ', colors.red);
+var text:= new TextWPF(10,100,'очки: ', colors.blue);
 
 procedure initEnemy;
 begin
