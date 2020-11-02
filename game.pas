@@ -1,14 +1,17 @@
 ﻿uses WPFObjects, GraphWPF;
+
 const enemyCount = 20;
 var enemyRadius := 20;
 var sWidth := 800;
 var sHeight := 600;
 
 var player := new CircleWPF(10, 10, 10, colors.blue);
+
 var arrayEnemy:array[1..enemyCount] of CircleWPF;
 
 var text:= new TextWPF(10,100,'очки: ', colors.blue);
 
+/// процедура создания врагов
 procedure initEnemy;
 begin
   for var i:=1 to enemyCount do
@@ -19,8 +22,10 @@ procedure moveEnemy;
 begin
   for var i:=1 to enemyCount do
   begin
-    arrayEnemy[i].dx := random(-1,1);
-    arrayEnemy[i].dy := random(-1,1);
+   
+    
+    arrayEnemy[i].dx := random(1,-1);
+    arrayEnemy[i].dy := random(1,-1);
     arrayEnemy[i].Move;
   end;
 end;
@@ -29,14 +34,17 @@ end;
 /// начало программы
 begin
   window.SetSize(sWidth,sHeight);
+  window.Caption := 'крутая игра';
   initEnemy;
  
-  
+  var fpsCount := 0;
   while true do
   begin
     moveEnemy;
     
-   
+    
+    fpsCount+=1;
+   text.Text := (fpsCount/Milliseconds*1000).ToString;
   end;
   
   
