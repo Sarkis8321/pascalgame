@@ -1,4 +1,4 @@
-﻿uses WPFObjects, GraphWPF;
+﻿uses WPFObjects, GraphWPF, score;
 
 const enemyCount = 20;
 var enemyRadius := 20;
@@ -6,9 +6,19 @@ var sWidth := 800;
 var sHeight := 600;
 var playerSpeed := 1;
 
+/// текущий счет
+var scoreCount:=0;
+
 var player := new CircleWPF(10, 10, 10, colors.blue);
 var arrayEnemy:array[1..enemyCount] of CircleWPF;
-var text:= new TextWPF(10,100,'очки: ', colors.blue);
+
+/// fps
+var text:= new TextWPF(sWidth+10,10,'fps: ', colors.blue);
+
+var score1:= new scoreWPF(sWidth+10,40,'score: 0', colors.blue);
+
+
+
 
 var eat := new RectangleWPF(random(enemyRadius,sWidth-enemyRadius),random(enemyRadius,sHeight-enemyRadius),20,20, clRandom);
 
@@ -81,7 +91,11 @@ end;
 function isCollisionEatToPlayer: boolean;
 begin
   var a := false;
-  if player.Intersects(Eat) then a := true;
+  if player.Intersects(Eat) then 
+    begin
+      scoreCount +=1;
+      a := true;
+    end;
   Result:= a;
 end;
 
@@ -91,15 +105,14 @@ begin
   eat := new RectangleWPF(random(enemyRadius,sWidth-enemyRadius),random(enemyRadius,sHeight-enemyRadius),20,20, clRandom);
 end;
 
-
 /// начало программы
 begin
-  window.SetSize(sWidth,sHeight);
+  window.SetSize(sWidth+300,sHeight);
   window.Caption := 'крутая игра';
+  var rightLine := new lineWPF(sWidth,0,sWidth,sHeight,colors.Blue);
+  
   initEnemy;
   var fpsCount := 0;
-  
-  
   
   var fGame := true;
   
@@ -116,7 +129,9 @@ begin
     
     
     fpsCount+=1;
-   text.Text := (fpsCount/Milliseconds*1000).ToString;
+   text.Text := 'FPS: ' + (fpsCount/Milliseconds*1000).ToString;
+   
+   score1.Text := 'Count: ' + scoreCount.ToString;
   end;
   
   
