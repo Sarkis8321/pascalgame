@@ -23,10 +23,18 @@ procedure moveEnemy;
 begin
   for var i:=1 to enemyCount do
   begin
-   
+    if arrayEnemy[i].left <= 0 then arrayEnemy[i].Dx := 10
+    else arrayEnemy[i].dx := random(1,-1);
+      
+    if arrayEnemy[i].left >= sWidth - 2*enemyRadius then arrayEnemy[i].Dx := -10
+    else arrayEnemy[i].dx := random(1,-1);
     
-    arrayEnemy[i].dx := random(1,-1);
-    arrayEnemy[i].dy := random(1,-1);
+    if arrayEnemy[i].top >= sHeight- 2*enemyRadius then arrayEnemy[i].Dy := -10
+    else arrayEnemy[i].dy := random(1,-1);
+    
+    if arrayEnemy[i].top <= 0 then arrayEnemy[i].Dy := 10
+    else arrayEnemy[i].dy := random(1,-1);
+    
     arrayEnemy[i].Move;
   end;
 end;
@@ -55,10 +63,11 @@ end;
 
 procedure MovePlayer;
 begin
-  if vLeft then Player.MoveOn(-playerSpeed,0);
-  if vRight then Player.MoveOn(playerSpeed,0);
-  if vUp then Player.MoveOn(0,-playerSpeed);
-  if vDown then Player.MoveOn(0,playerSpeed);
+   
+  if (vLeft) and (player.left >= 0) then Player.MoveOn(-playerSpeed,0);
+  if (vRight) and (player.left <= sWidth - 20) then Player.MoveOn(playerSpeed,0);
+  if (vUp) and (player.top >= 0) then Player.MoveOn(0,-playerSpeed);
+  if (vDown) and (player.top <= sHeight - 20) then Player.MoveOn(0,playerSpeed);
 end;
 
 function isCollisionEnemyToPlayer: boolean;
