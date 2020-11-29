@@ -3,7 +3,7 @@
 type
   Enemys = set of CircleWPF;
 
-const enemyCount = 20;
+var enemyCount := 5;
 var enemyRadius := 20;
 var sWidth := 800;
 var sHeight := 600;
@@ -20,7 +20,8 @@ var text:= new TextWPF(sWidth+10,10,'fps: ', colors.blue);
 
 var score1:= new scoreWPF(sWidth+10,40,'score: 0', colors.blue);
 
-
+/// блок показа количества врагов
+var EnemyCountScore:= new scoreWPF(sWidth+10,70,'Врагов: ' + enemyCount, colors.blue);
 
 
 var eat := new RectangleWPF(random(enemyRadius,sWidth-enemyRadius),random(enemyRadius,sHeight-enemyRadius),20,20, clRandom);
@@ -106,6 +107,9 @@ procedure rerenderEat;
 begin
   eat.Destroy;
   eat := new RectangleWPF(random(enemyRadius,sWidth-enemyRadius),random(enemyRadius,sHeight-enemyRadius),20,20, clRandom);
+  arrayEnemy += [new CircleWPF(random(enemyRadius,sWidth-enemyRadius),random(enemyRadius,sHeight-enemyRadius),enemyRadius, colors.Red)];
+  enemyCount +=1;
+  EnemyCountScore.Text:= 'Врагов: ' + enemyCount;
 end;
 
 /// начало программы
