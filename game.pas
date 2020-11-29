@@ -1,5 +1,8 @@
 ﻿uses WPFObjects, GraphWPF, score;
 
+type
+  Enemys = set of CircleWPF;
+
 const enemyCount = 20;
 var enemyRadius := 20;
 var sWidth := 800;
@@ -10,7 +13,7 @@ var playerSpeed := 1;
 var scoreCount:=0;
 
 var player := new CircleWPF(10, 10, 10, colors.blue);
-var arrayEnemy:array[1..enemyCount] of CircleWPF;
+var arrayEnemy:Enemys;
 
 /// fps
 var text:= new TextWPF(sWidth+10,10,'fps: ', colors.blue);
@@ -26,26 +29,26 @@ var eat := new RectangleWPF(random(enemyRadius,sWidth-enemyRadius),random(enemyR
 procedure initEnemy;
 begin
   for var i:=1 to enemyCount do
-    arrayEnemy[i]:= new CircleWPF(random(enemyRadius,sWidth-enemyRadius),random(enemyRadius,sHeight-enemyRadius),enemyRadius, colors.Red);
+    arrayEnemy += [new CircleWPF(random(enemyRadius,sWidth-enemyRadius),random(enemyRadius,sHeight-enemyRadius),enemyRadius, colors.Red)];
 end;
 
 procedure moveEnemy;
 begin
-  for var i:=1 to enemyCount do
+  foreach var itemEnm in arrayEnemy do
   begin
-    if arrayEnemy[i].left <= 0 then arrayEnemy[i].Dx := 10
-    else arrayEnemy[i].dx := random(1,-1);
+    if itemEnm.left <= 0 then itemEnm.Dx := 10
+    else itemEnm.dx := random(1,-1);
       
-    if arrayEnemy[i].left >= sWidth - 2*enemyRadius then arrayEnemy[i].Dx := -10
-    else arrayEnemy[i].dx := random(1,-1);
+    if itemEnm.left >= sWidth - 2*enemyRadius then itemEnm.Dx := -10
+    else itemEnm.dx := random(1,-1);
     
-    if arrayEnemy[i].top >= sHeight- 2*enemyRadius then arrayEnemy[i].Dy := -10
-    else arrayEnemy[i].dy := random(1,-1);
+    if itemEnm.top >= sHeight- 2*enemyRadius then itemEnm.Dy := -10
+    else itemEnm.dy := random(1,-1);
     
-    if arrayEnemy[i].top <= 0 then arrayEnemy[i].Dy := 10
-    else arrayEnemy[i].dy := random(1,-1);
+    if itemEnm.top <= 0 then itemEnm.Dy := 10
+    else itemEnm.dy := random(1,-1);
     
-    arrayEnemy[i].Move;
+    itemEnm.Move;
   end;
 end;
 
@@ -83,8 +86,8 @@ end;
 function isCollisionEnemyToPlayer: boolean;
 begin
   var a := false;
-  for var i:=1 to enemyCount do
-    if player.Intersects(arrayEnemy[i]) then a := true;
+   foreach var itemEnm in arrayEnemy do
+    if player.Intersects(itemEnm) then a := true;
   Result:= a;
 end;
 
