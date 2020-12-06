@@ -9,8 +9,11 @@ var sWidth := 800;
 var sHeight := 600;
 var playerSpeed := 1;
 
+var healthCount := 3;
+
 /// текущий счет
 var scoreCount:=0;
+var fpsCount := 0;
 
 var player := new CircleWPF(10, 10, 10, colors.blue);
 var arrayEnemy:Enemys;
@@ -23,6 +26,8 @@ var score1:= new scoreWPF(sWidth+10,40,'score: 0', colors.blue);
 /// блок показа количества врагов
 var EnemyCountScore:= new scoreWPF(sWidth+10,70,'Врагов: ' + enemyCount, colors.blue);
 
+/// количество жизней
+var HealthCountScore:= new scoreWPF(sWidth+10,100,'Жизней: ' + healthCount, colors.blue);
 
 var eat := new RectangleWPF(random(enemyRadius,sWidth-enemyRadius),random(enemyRadius,sHeight-enemyRadius),20,20, clRandom);
 
@@ -53,7 +58,7 @@ begin
   end;
 end;
 
-var (vLeft, vRight, vUp, vDown) := (false,false,false,false);
+var (vLeft, vRight, vUp, vDown, vSpace) := (false,false,false,false,false);
 
 procedure keyDown(K: Key);
 begin
@@ -62,6 +67,7 @@ begin
     Key.Left: vLeft := true;
     Key.Up: vUp := true;
     Key.Down: vDown := true;
+    Key.Space: vSpace:= not(vSpace);
   end;
 end;
 
@@ -112,18 +118,33 @@ begin
   EnemyCountScore.Text:= 'Врагов: ' + enemyCount;
 end;
 
-/// начало программы
+procedure waitDegreeHealth;
+begin
+  var DegreeHealth:= new TextWPF(50,(sHeight/2)-20,'Потеряли жизнь, бегите за новой', colors.blue);
+  DegreeHealth.BackgroundColor := colors.Black;
+  DegreeHealth.Color := colors.White;
+  DegreeHealth.FontSize:= 40;
+  sleep(3000);
+  DegreeHealth.Destroy;
+end;
+
+
+
+procedure init;
 begin
   window.SetSize(sWidth+300,sHeight);
   window.Caption := 'крутая игра';
   var rightLine := new lineWPF(sWidth,0,sWidth,sHeight,colors.Blue);
-  
   initEnemy;
-  var fpsCount := 0;
+end;
+
+function start(startGame:boolean):boolean;
+begin
   
-  var fGame := true;
+  Player.Left := 10;
+  Player.Top := 10;
   
-  while fGame do
+  while startGame do
   begin
     moveEnemy;
     
@@ -131,9 +152,10 @@ begin
     onKeyUp := keyUp;
     MovePlayer;
     
-    if isCollisionEnemyToPlayer then fGame := false;
-    if isCollisionEatToPlayer then rerenderEat;
+    if vSpace then startGame := false;
     
+    if isCollisionEnemyToPlayer then startGame := false;
+    if isCollisionEatToPlayer then rerenderEat;
     
     fpsCount+=1;
    text.Text := 'FPS: ' + (fpsCount/Milliseconds*1000).ToString;
@@ -141,6 +163,26 @@ begin
    score1.Text := 'Count: ' + scoreCount.ToString;
   end;
   
+  result := false;
   
+end;
+
+/// начало программы
+begin
+  
+  init;
+ 
+  var fGame := true;
+  
+  loop healthCount do
+  begin
+    if(start(fGame) = false) then 
+      begin
+        healthCount -= 1;
+        HealthCountScore.Text := ('Жизней: ' + healthCount).ToString;
+        waitDegreeHealth;
+      end;
+  end;  
+   
   
 end.
