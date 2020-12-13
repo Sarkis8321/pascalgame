@@ -1,4 +1,4 @@
-﻿uses WPFObjects, GraphWPF, score;
+﻿uses WPFObjects, GraphWPF, score, Timers;
 
 type
   Enemys = set of CircleWPF;
@@ -30,12 +30,13 @@ var EnemyCountScore:= new scoreWPF(sWidth+10,70,'Врагов: ' + enemyCount, c
 var HealthCountScore:= new scoreWPF(sWidth+10,100,'Жизней: ' + healthCount, colors.blue);
 
 var eat := new RectangleWPF(random(enemyRadius,sWidth-enemyRadius),random(enemyRadius,sHeight-enemyRadius),20,20, clRandom);
+var eatHealth := new RectangleWPF(random(enemyRadius,sWidth-enemyRadius),random(enemyRadius,sHeight-enemyRadius),40,40, clRandom);
 
 /// процедура создания врагов
 procedure initEnemy;
 begin
   for var i:=1 to enemyCount do
-    arrayEnemy += [new CircleWPF(random(enemyRadius,sWidth-enemyRadius),random(enemyRadius,sHeight-enemyRadius),enemyRadius, colors.Red)];
+    arrayEnemy += [new CircleWPF(random(enemyRadius+20,sWidth-enemyRadius),random(enemyRadius,sHeight-enemyRadius),enemyRadius, colors.Red)];
 end;
 
 procedure moveEnemy;
@@ -109,6 +110,19 @@ begin
   Result:= a;
 end;
 
+function isCollisionEatHealthToPlayer: boolean;
+begin
+  var a := false;
+  if player.Intersects(EatHealth) then 
+    begin
+      healthCount +=1;
+      HealthCountScore.Text := ('Жизней: ' + healthCount).ToString;
+      eatHealth.Visible := false;
+      a := true;
+    end;
+  Result:= a;
+end;
+
 procedure rerenderEat;
 begin
   eat.Destroy;
@@ -128,7 +142,14 @@ begin
   DegreeHealth.Destroy;
 end;
 
+procedure renderEatHealth;
+begin
+  eatHealth.Destroy;
+  eatHealth := new RectangleWPF(random(enemyRadius,sWidth-enemyRadius),random(enemyRadius,sHeight-enemyRadius),40,40, clRandom);
+  eatHealth.Visible := true;
+end;
 
+var timerHealth := new Timer(3000,renderEatHealth);
 
 procedure init;
 begin
@@ -144,6 +165,8 @@ begin
   Player.Left := 10;
   Player.Top := 10;
   
+  timerHealth.Start;
+  
   while startGame do
   begin
     moveEnemy;
@@ -156,12 +179,15 @@ begin
     
     if isCollisionEnemyToPlayer then startGame := false;
     if isCollisionEatToPlayer then rerenderEat;
+    if isCollisionEatHealthToPlayer then renderEatHealth;
     
     fpsCount+=1;
    text.Text := 'FPS: ' + (fpsCount/Milliseconds*1000).ToString;
    
    score1.Text := 'Count: ' + scoreCount.ToString;
   end;
+  
+  timerHealth.Stop;
   
   result := false;
   
@@ -174,7 +200,7 @@ begin
  
   var fGame := true;
   
-  loop healthCount do
+  while healthCount > 0 do
   begin
     if(start(fGame) = false) then 
       begin
@@ -184,5 +210,4 @@ begin
       end;
   end;  
    
-  
 end.
