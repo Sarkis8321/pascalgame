@@ -3,7 +3,7 @@
 type
   Enemys = set of CircleWPF;
 
-var enemyCount := 5;
+var enemyCount := 6;
 var enemyRadius := 20;
 var sWidth := 800;
 var sHeight := 600;
